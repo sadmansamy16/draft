@@ -279,29 +279,12 @@
         const STORAGE_KEY = "samy_chat_cache_" + btoa(window.location.pathname).replace(/=/g, "");
 
         function linkify(text) {
-            // 1. Handle explicit markdown links: [Text](url)
             const hiddenLinkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
             text = text.replace(hiddenLinkPattern, '<a href="$2" target="_blank">$1</a>');
-
-            // 2. Handle absolute URLs starting with http://, https://, ftp://, file://
             const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-            text = text.replace(urlPattern, (match) => {
-                return text.includes('href="' + match) ? match : `<a href="${match}" target="_blank">${match}</a>`;
-            });
-
-            // 3. Handle standalone www. links
             const wwwPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-            text = text.replace(wwwPattern, '$1<a href="http://$2" target="_blank">$2</a>');
-
-            // 4. NEW: Handle raw domains/subdomains without http/https/www (e.g., sadmansamyxyf.ib.io)
-            const rawDomainPattern = /(?<!href=")(?<!http:\/\/)(?<!https:\/\/)\b([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+)(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?\b/ig;
-            
-            return text.replace(rawDomainPattern, (match) => {
-                if (text.includes('href="' + match) || match.includes('<') || match.includes('>')) {
-                    return match;
-                }
-                return `<a href="https://${match}" target="_blank">${match}</a>`;
-            });
+            return text.replace(urlPattern, (match) => text.includes('href="' + match) ? match : `<a href="${match}" target="_blank">${match}</a>`)
+                       .replace(wwwPattern, '$1<a href="http://$2" target="_blank">$2</a>');
         }
 
         function appendBubble(container, msg, isLocal = false, index = null) {
@@ -345,6 +328,7 @@
             
             activeMessageData = { text, isLocal, index };
             
+            // Only local user messages can be flipped or deleted
             deleteBtn.style.display = isLocal ? 'flex' : 'none';
             switchBtn.style.display = isLocal ? 'flex' : 'none';
             
@@ -372,6 +356,7 @@
             hideMenu();
         }
 
+        // NEW FEATURE: Toggles message type between 'r' (right) and 'l' (left)
         function toggleMessageSide() {
             if (!activeMessageData || !activeMessageData.isLocal) return;
             let localMessages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
