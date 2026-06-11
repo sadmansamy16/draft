@@ -125,33 +125,32 @@
             white-space: normal;
         }
 
-        /* FIXED: Beautiful Premium Context Menu Layout */
+        /* Clean Light Frosted-Glass Context Menu Layout */
         .bubble-menu {
             position: fixed;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             display: none;
             flex-direction: column;
             z-index: 2000;
-            min-width: 180px;
+            min-width: 175px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            padding: 4px 0;
+            border: 1px solid rgba(0, 0, 0, 0.06);
             animation: popMenu 0.12s cubic-bezier(0.1, 0.8, 0.3, 1);
         }
 
         @keyframes popMenu {
-            from { transform: scale(0.92); opacity: 0; }
+            from { transform: scale(0.88); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
         .bubble-menu button {
             background: none;
             border: none;
-            padding: 11px 16px;
+            padding: 12px 18px;
             text-align: left;
             font-size: 15px;
             font-weight: 500;
@@ -160,34 +159,27 @@
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Pushes text left, icon right */
+            justify-content: space-between;
             gap: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             box-sizing: border-box;
-            transition: background 0.1s ease;
         }
 
-        .bubble-menu button:hover, 
-        .bubble-menu button:active { 
-            background: rgba(0, 0, 0, 0.05); 
-        }
-        
-        .bubble-menu button.delete-btn { 
-            color: #ff3b30; 
-        }
+        .bubble-menu button:last-child { border-bottom: none; }
+        .bubble-menu button:hover { background: rgba(0, 0, 0, 0.04); }
+        .bubble-menu button.delete-btn { color: #ff3b30; }
 
-        /* Material Symbols Formatting */
         .material-symbols-outlined {
             display: inline-block;
-            font-family: 'Material Symbols Outlined' !important;
+            font-family: 'Material Symbols Outlined';
             font-size: 22px;
             line-height: 1;
-            font-weight: normal;
-            font-style: normal;
             letter-spacing: normal;
             text-transform: none;
             white-space: nowrap;
             word-wrap: normal;
             direction: ltr;
+            -webkit-font-feature-settings: 'liga';
             -webkit-font-smoothing: antialiased;
         }
 
@@ -272,6 +264,7 @@
     </div>
 
     <script>
+        // SMART DETECTION: Check environment source cleanly to apply mobile vs desktop rules
         const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         if (!isMobileDevice) {
             document.body.classList.add('is-desktop');
@@ -282,28 +275,16 @@
         let isFirstLoad = true;
         let activeMessageData = null; 
 
+        // UNIQUE STORAGE KEY: Prevents chats on different sub-links from mixing up
         const STORAGE_KEY = "samy_chat_cache_" + btoa(window.location.pathname).replace(/=/g, "");
 
         function linkify(text) {
             const hiddenLinkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
             text = text.replace(hiddenLinkPattern, '<a href="$2" target="_blank">$1</a>');
-
             const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-            text = text.replace(urlPattern, (match) => {
-                return text.includes('href="' + match) ? match : `<a href="${match}" target="_blank">${match}</a>`;
-            });
-
             const wwwPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-            text = text.replace(wwwPattern, '$1<a href="http://$2" target="_blank">$2</a>');
-
-            const rawDomainPattern = /(?<!href=")(?<!http:\/\/)(?<!https:\/\/)\b([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+)(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?\b/ig;
-            
-            return text.replace(rawDomainPattern, (match) => {
-                if (text.includes('href="' + match) || match.includes('<') || match.includes('>')) {
-                    return match;
-                }
-                return `<a href="https://${match}" target="_blank">${match}</a>`;
-            });
+            return text.replace(urlPattern, (match) => text.includes('href="' + match) ? match : `<a href="${match}" target="_blank">${match}</a>`)
+                       .replace(wwwPattern, '$1<a href="http://$2" target="_blank">$2</a>');
         }
 
         function appendBubble(container, msg, isLocal = false, index = null) {
@@ -347,6 +328,7 @@
             
             activeMessageData = { text, isLocal, index };
             
+            // Only local user messages can be flipped or deleted
             deleteBtn.style.display = isLocal ? 'flex' : 'none';
             switchBtn.style.display = isLocal ? 'flex' : 'none';
             
@@ -355,7 +337,7 @@
             let leftPos = clientX;
             let topPos = clientY + 10;
 
-            if (leftPos + 180 > window.innerWidth) { leftPos = window.innerWidth - 190; }
+            if (leftPos + 175 > window.innerWidth) { leftPos = window.innerWidth - 185; }
             if (topPos + 150 > window.innerHeight) { topPos = clientY - 155; }
 
             menu.style.left = leftPos + 'px';
@@ -374,6 +356,7 @@
             hideMenu();
         }
 
+        // NEW FEATURE: Toggles message type between 'r' (right) and 'l' (left)
         function toggleMessageSide() {
             if (!activeMessageData || !activeMessageData.isLocal) return;
             let localMessages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
