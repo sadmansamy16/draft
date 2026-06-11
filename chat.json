@@ -1,13 +1,45 @@
 [
- ["https://www.rareanimes.buzz/", "l"],
- ["chat48", "r"],
- ["https://hianime.cv", "l"],
- ["chat50", "r"],
- ["chat45", "l"],
- ["chat46", "r"],
- ["chat47", "l"],
- ["chat48", "r"],
- ["chat49", "l"],
- ["chat50", "r"]
-]
 
+["[Movie](https://samy.pro.bd/chat/movie)", "l"],
+["[App](https://samy.pro.bd/chat/app)", "l"],
+["[Anime](https://samy.pro.bd/chat/anime)", "l"],
+
+
+["WiFi", "m"],
+  ["http://192.168.0.1/#accessControl http://192.168.0.1/#dhcpServerAdv https://myswift.amberit.com.bd/SignIn.aspx", "r"],
+
+
+["https://tplinkwifi.net http://192.168.2.42/#accessControl http://192.168.2.42/#dhcpServerAdv https://myswift.amberit.com.bd/SignIn.aspx", "r"],
+
+
+
+
+["SIP Call User Panel", "m"],
+["https://amarip.net/", "r"],
+["https://webvoice.net/", "r"],
+["https://icctalk.com/", "r"],
+["https://sip.italk.com.bd/iconiptsp/", "r"],
+["https://iptsp.pmcon.net/portal/login", "r"],
+  
+
+  
+  ["-- -- -- -- --", "m"],
+  ["chat1", "l"],
+  ["chat2", "r"],
+  ["chat3", "l"],
+  ["chat4", "r"],
+  ["chat5", "l"],
+  ["chat6", "r"],
+
+
+["https://livefyiptv.vercel.app/ https://fanzone-omega.vercel.app/ https://shopnojaal.ct.ws/ayna/?i=1 https://kbtvpro.totalh.net/?fbclid=IwY2xjawPPNOZleHRuA2FlbQIxMABicmlkETFhcGNqRk5hZVNXdW9KbHJIc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvG5v1Z5zUPCqnzCP1pbGMaQfiV-_X9Cr5VeapyoEB1gmBhLQ5mJ4irHerRE_aem_vLQp6tZekkVW7-hM6Jd9bw&i=3 https://livefyiptv.vercel.app/ https://nfiptv24.blogspot.com/ http://198.195.239.50/ https://torongoplus.vercel.app/ http://ftpbdlive.com/ https://vibes.pro.bd/ http://ryvoxtb.free.nf/?i=2 https://bongo-tv.netlify.app/ https://famelack.com/tv", "r"],
+  
+
+  ["chat12.me", "l"],
+  ["chat13", "r"],
+  ["chat14", "l"],
+  ["chat15", "r"],
+  ["chat16", "l"],
+  ["chat17", "r"],
+  ["chat18", "l"]
+]
