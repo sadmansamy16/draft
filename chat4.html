@@ -420,28 +420,47 @@
         }
 
         async function sendLiveChatMessage() {
-            const inputField = document.getElementById('chat-input');
-            const rawMessage = inputField.value.trim();
-            if (!rawMessage) return;
+    const inputField = document.getElementById('chat-input');
+    const rawMessage = inputField.value.trim();
+    if (!rawMessage) return;
 
-            const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            messages.push([rawMessage, 'r', Date.now()]);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    // 1. Get and update LocalStorage data
+    const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const newMsgObj = [rawMessage, 'r', Date.now()];
+    messages.push(newMsgObj);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
 
-            inputField.value = '';
-            
-            await loadMessages();
-            
-            // Instantly focuses layout timeline to the latest content right after submission
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
+    inputField.value = '';
+    
+    // 2. SMART FIX: Check if we need to add a separator badge before appending
+    const chat = document.getElementById('chat');
+    const hasSeparator = document.querySelector('.section-separator');
+    
+    // If this is the very first local message, generate the separator badge cleanly without wiping everything
+    if (!hasSeparator && chat.children.length > 0) {
+        const separatorContainer = document.createElement('div');
+        separatorContainer.className = 'section-separator';
+        const badge = document.createElement('span');
+        badge.className = 'section-badge';
+        badge.textContent = 'My Messages';
+        separatorContainer.appendChild(badge);
+        chat.appendChild(separatorContainer);
+    }
 
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: rawMessage })
-            });
-        }
+    // 3. Inject just the single bubble natively to preserve keyboard view focus
+    const newMsgIndex = messages.length - 1;
+    appendBubble(chat, newMsgObj, true, newMsgIndex);
+    
+    // 4. Instantly scroll window down smoothly
+    chat.scrollTop = chat.scrollHeight;
+
+    // 5. Fire your remote API event safely in the background
+    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: rawMessage })
+    });
+}
 
         loadMessages();
         setInterval(loadMessages, 10000);
