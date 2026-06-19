@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortURL Link Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 500px;
+            width: 100%;
+        }
+        h2 { margin-top: 0; color: #007bff; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; }
+        input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 15px;
+        }
+        button:hover { background-color: #0056b3; }
+        .result-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+            display: none;
+        }
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        .copy-info { font-size: 13px; color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Generate 2-Digit ShortURL</h2>
+        <p>This tool checks your live <code>urls.json</code> file to prevent duplicates before generating a new shortcut.</p>
+        
+        <label for="longUrl">Destination Website URL:</label>
+        <input type="url" id="longUrl" placeholder="https://example.com" required>
+        
+        <button onclick="generateShortUrl()">Generate Unique Code</button>
+
+        <div id="result" class="result-box">
+            <p><strong>Your New Short Link:</strong><br>
+            <span id="shortLinkDisplay" style="color:#007bff; font-weight:bold;"></span></p>
+            
+            <label>Add this line inside your <code>urls.json</code> file:</label>
+            <pre><code id="jsonCodeDisplay"></code></pre>
+            <p class="copy-info">⚠️ Paste this line inside the curly braces <code>{}</code> of your JSON file. Remember to add a comma separating your old entries!</p>
+        </div>
+    </div>
+
+    <script>
+        // Character pool: 10 numbers + 26 lowercase letters = 36 total choices
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+        async function generateShortUrl() {
+            const longUrlInput = document.getElementById('longUrl').value.trim();
+            const resultBox = document.getElementById('result');
+            
+            if (!longUrlInput) {
+                alert('Please paste a valid website destination URL.');
+                return;
+            }
+
+            try {
+                // 1. Fetch your live json file to read existing shortcuts
+                const response = await fetch('/urls.json');
+                if (!response.ok) throw new Error('Could not access urls.json');
+                const existingData = await response.json();
+
+                let uniqueCode = '';
+                let isDuplicate = true;
+                let attempts = 0;
+                const maxCombinations = 1296; // 36 * 36
+
+                // 2. Loop to create a completely random 2-digit code and check availability
+                while (isDuplicate && attempts < maxCombinations) {
+                    const char1 = chars[Math.floor(Math.random() * chars.length)];
+                    const char2 = chars[Math.floor(Math.random() * chars.length)];
+                    uniqueCode = char1 + char2;
+
+                    // If code doesn't exist in our JSON file, it is safe to use
+                    if (!existingData.hasOwnProperty(uniqueCode)) {
+                        isDuplicate = false;
+                    }
+                    attempts++;
+                }
+
+                // Guard clause if all 1,296 combinations are used up
+                if (isDuplicate) {
+                    alert('Error: You have reached the maximum limit of 1,296 unique 2-digit links!');
+                    return;
+                }
+
+                // 3. Construct the output links and display them
+                const baseUrl = window.location.origin;
+                const fullShortUrl = `${baseUrl}/${uniqueCode}`;
+                const jsonSnippet = `"${uniqueCode}": "${longUrlInput}"`;
+
+                document.getElementById('shortLinkDisplay').innerText = fullShortUrl;
+                document.getElementById('jsonCodeDisplay').innerText = jsonSnippet;
+                resultBox.style.display = 'block';
+
+            } catch (error) {
+                console.error(error);
+                alert('System Error: Make sure your urls.json file is published correctly in the repository root directory.');
+            }
+        }
+    </script>
+
+</body>
+</html>
