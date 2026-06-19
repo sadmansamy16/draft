@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container { text-align: center; }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #007bff;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="spinner"></div>
+        <h2 id="status">Redirecting you...</h2>
+        <p id="error-message" style="color: #dc3545; display: none; font-weight: bold;">This link does not exist or has expired.</p>
+    </div>
+
+    <script>
+        async function handleRedirect() {
+            // 1. Get the 2-digit code from the URL path
+            const path = window.location.pathname.replace(/^\/|\/$/g, '');
+            
+            // 2. Automatically convert big letters to small letters
+            const shortCode = path.toLowerCase();
+
+            // Guard clause if someone just visits the root domain nakedly
+            if (!shortCode) {
+                showError("Welcome! Please provide a short code.");
+                return;
+            }
+
+            try {
+                // 3. Fetch the external JSON database file
+                const response = await fetch('/urls.json');
+                if (!response.ok) throw new Error('Database failed to load');
+                
+                const urlDatabase = await response.json();
+
+                // 4. Match check and redirection execution
+                if (urlDatabase[shortCode]) {
+                    window.location.href = urlDatabase[shortCode];
+                } else {
+                    showError("404 - Link Not Found");
+                }
+            } catch (error) {
+                console.error(error);
+                showError("System Error: Could not load the short link database.");
+            }
+        }
+
+        function showError(message) {
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('status').innerText = message;
+            document.getElementById('error-message').style.display = 'block';
+        }
+
+        // Run the function immediately when the 404 page triggers
+        handleRedirect();
+    </script>
+
+</body>
+</html>
