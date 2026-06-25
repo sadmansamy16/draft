@@ -1,12 +1,10 @@
 const CACHE_NAME = 'samy-search-v6';
 const ASSETS = [
-  '/search/',
-  '/search/index.html',
-  '/search/manifest.json',
-  '/search/weblist.json',
-  '/search/weblogo.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/index.html',
+  '/manifest.json',
+  '/weblist.json',
+  '//weblogo.json',
+  '/icon.png'
 ];
 
 self.addEventListener('install', (e) => {
