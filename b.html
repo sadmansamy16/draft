@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qsamy Image</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        body { margin: 0; background: #ffffff; font-family: sans-serif; }
+        .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
+        .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; cursor: pointer; border-radius: 8px; background: #f0f0f0; }
+        
+        #viewer { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 1000; }
+        #viewer img { max-width: 90%; max-height: 70%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .controls { color: #000; margin-top: 20px; text-align: center; }
+        button { padding: 12px 24px; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #f9f9f9; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="gallery" id="gallery"></div>
+
+<div id="viewer" onclick="this.style.display='none'">
+    <img id="viewImg" src="">
+    <div class="controls" onclick="event.stopPropagation()">
+        <p id="imgName" style="font-weight:bold;"></p>
+        <button onclick="copyData()">Copy Link</button>
+    </div>
+</div>
+
+<script>
+    const gallery = document.getElementById('gallery');
+
+    function createImg(src, name) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onerror = function() { this.style.display = 'none'; };
+        img.onclick = () => showViewer(src, name);
+        gallery.appendChild(img);
+    }
+
+    // 1. Samy Nav 1-100 (Looping for efficiency, but loading images individually)
+    for(let i = 1; i <= 100; i++) {
+        createImg("https://samy.nav.bd/img/" + i + ".png", i + ".png");
+    }
+
+    // 2. Samy Nav JSON
+    fetch('img.json').then(r => r.json()).then(data => {
+        data.forEach(fileName => createImg("https://samy.nav.bd/img/" + fileName, fileName));
+    }).catch(() => {});
+
+    // 3. Manual BWI Subdomains
+    const subs = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+                  "aa","bb","cc","dd","ee","ff","gg","hh","ii","jj","kk","ll","mm","nn","oo","pp","qq","rr","ss","tt","uu","vv","ww","xx","yy","zz"];
+    
+    subs.forEach(s => createImg(`https://${s}.bwi.pages.dev/icon.png`, s));
+
+    function showViewer(src, name) {
+        document.getElementById('viewImg').src = src;
+        document.getElementById('imgName').innerText = name;
+        document.getElementById('viewer').style.display = 'flex';
+    }
+
+    function copyData() {
+        navigator.clipboard.writeText(document.getElementById('viewImg').src);
+    }
+</script>
+</body>
+</html>
