@@ -12,7 +12,7 @@
         #viewer { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; }
         #viewer img { max-width: 90%; max-height: 70%; object-fit: contain; }
         .controls { color: white; margin-top: 20px; text-align: center; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; border: none; background: #333; color: white; }
     </style>
 </head>
 <body>
@@ -31,25 +31,23 @@
     const baseUrl = "https://samy.nav.bd/img/";
     const gallery = document.getElementById('gallery');
 
-    // Function to create image element
-    function createImg(name) {
+    function createImg(fileName) {
         const img = document.createElement('img');
-        img.src = baseUrl + name;
-        // This mimics your friend's project: if image 404s, it hides
+        img.src = baseUrl + fileName;
         img.onerror = function() { this.style.display = 'none'; };
-        img.onclick = () => showViewer(img.src, name);
+        img.onclick = () => showViewer(img.src, fileName);
         gallery.appendChild(img);
     }
 
-    // 1. Add 1 to 100 images automatically
+    // 1. Automatic 1 to 100
     for(let i = 1; i <= 100; i++) {
         createImg(i + ".png");
     }
 
-    // 2. Load extra images from img.json
+    // 2. Load from simple list in img.json
     fetch('img.json').then(r => r.json()).then(data => {
-        data.forEach(item => createImg(item.name));
-    }).catch(() => console.log("No img.json found, skipping."));
+        data.forEach(fileName => createImg(fileName));
+    }).catch(() => console.log("No img.json found"));
 
     function showViewer(src, name) {
         document.getElementById('viewImg').src = src;
@@ -67,4 +65,3 @@
 
 </body>
 </html>
- 
