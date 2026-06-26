@@ -1,20 +1,21 @@
-const CACHE_NAME = 'samy-search-v6';
+const CACHE_NAME = 'samy-search-v1';
 const ASSETS = [
+  '/',
   '/index.html',
+  '/icon.png',
   '/manifest.json',
   '/weblist.json',
-  '//weblogo.json',
-  '/icon.png'
+  '/weblogo.json'
 ];
 
+// Install event
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
 });
 
+// Fetch event
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+    caches.match(e.request).then((response) => response || fetch(e.request))
   );
 });
