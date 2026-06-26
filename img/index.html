@@ -5,14 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery</title>
     <style>
-        body { margin: 0; background: #000; font-family: sans-serif; }
-        .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; cursor: pointer; }
+        body { margin: 0; background: #000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        #viewer { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; }
-        #viewer img { max-width: 90%; max-height: 70%; object-fit: contain; }
+        /* Gallery Grid with gaps and padding like mobile */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 8px; 
+            padding: 8px;
+        }
+        .gallery img { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; 
+            object-fit: cover; 
+            display: block; 
+            cursor: pointer; 
+            border-radius: 8px; /* Rounded corners */
+        }
+        
+        /* Viewer Overlay */
+        #viewer { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 1000; }
+        #viewer img { max-width: 90%; max-height: 70%; object-fit: contain; border-radius: 8px; }
         .controls { color: white; margin-top: 20px; text-align: center; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; border: none; background: #333; color: white; }
+        button { padding: 12px 24px; margin: 5px; cursor: pointer; border-radius: 8px; border: none; background: #333; color: white; font-weight: 600; }
+        button:active { background: #555; }
     </style>
 </head>
 <body>
@@ -22,7 +38,7 @@
 <div id="viewer" onclick="this.style.display='none'">
     <img id="viewImg" src="">
     <div class="controls" onclick="event.stopPropagation()">
-        <p id="imgName"></p>
+        <p id="imgName" style="margin-bottom: 15px; opacity: 0.8;"></p>
         <button onclick="copyData()">Copy URL & Name</button>
     </div>
 </div>
@@ -34,6 +50,7 @@
     function createImg(fileName) {
         const img = document.createElement('img');
         img.src = baseUrl + fileName;
+        // Hides broken images automatically
         img.onerror = function() { this.style.display = 'none'; };
         img.onclick = () => showViewer(img.src, fileName);
         gallery.appendChild(img);
@@ -44,10 +61,14 @@
         createImg(i + ".png");
     }
 
-    // 2. Load from simple list in img.json
-    fetch('img.json').then(r => r.json()).then(data => {
-        data.forEach(fileName => createImg(fileName));
-    }).catch(() => console.log("No img.json found"));
+    // 2. Load from JSON list
+    // Ensure img.json is in the same folder as this index.html
+    fetch('img.json')
+        .then(r => r.json())
+        .then(data => {
+            data.forEach(fileName => createImg(fileName));
+        })
+        .catch(() => console.log("No img.json found, only loading 1-100."));
 
     function showViewer(src, name) {
         document.getElementById('viewImg').src = src;
