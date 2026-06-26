@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         /* White Theme */
         body { margin: 0; background: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -55,34 +56,33 @@
         const img = document.createElement('img');
         img.src = baseUrl + fileName;
         img.onerror = function() { this.style.display = 'none'; };
-        // Pass both src and the name to the viewer
         img.onclick = () => showViewer(img.src, fileName);
         gallery.appendChild(img);
     }
 
-    // 1. Automatic 1 to 100 (looping with .png extension)
+    // 1. Automatic 1 to 100
     for(let i = 1; i <= 100; i++) {
         createImg(i + ".png");
     }
 
-    // 2. Load from simple JSON list (e.g., ["bing.webp", "google.webp"])
+    // 2. Load from JSON list
     fetch('img.json')
         .then(r => r.json())
         .then(data => {
             data.forEach(fileName => createImg(fileName));
         })
-        .catch(() => console.log("No extra JSON files found."));
+        .catch(() => console.log("No img.json found."));
 
     function showViewer(src, name) {
         document.getElementById('viewImg').src = src;
-        document.getElementById('imgName').innerText = name; // Shows name like 1.png or bing.webp
+        document.getElementById('imgName').innerText = name;
         document.getElementById('viewer').style.display = 'flex';
     }
 
     function copyData() {
         const url = document.getElementById('viewImg').src;
         navigator.clipboard.writeText(url);
-        alert("Link copied!");
+        // Alert removed to stop the pop-up
     }
 </script>
 
