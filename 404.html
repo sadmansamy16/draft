@@ -60,6 +60,7 @@
         async function handleHybridRedirect() {
             const path = window.location.pathname.replace(/^\/|\/$/g, '').toLowerCase();
             
+            // If it's the base 404 page, show it immediately
             if (!path || path === "404.html") {
                 document.body.style.opacity = 1;
                 return;
@@ -69,18 +70,15 @@
                 const response = await fetch('/urls.json');
                 const urlDatabase = await response.json();
                 
-                // Direct redirect
                 if (urlDatabase[path]) {
+                    // Redirect immediately, no need to show body
                     window.location.replace(urlDatabase[path]);
-                } 
-                // Delayed UI redirect (prefixed with ui-)
-                else if (urlDatabase['ui-' + path]) {
-                    setTimeout(() => window.location.replace(urlDatabase['ui-' + path]), 300);
-                } 
-                else {
+                } else {
+                    // Path not found, reveal the 404 page
                     document.body.style.opacity = 1;
                 }
             } catch (e) {
+                // Database failed, show 404 page so user isn't stuck
                 document.body.style.opacity = 1;
             }
         }
