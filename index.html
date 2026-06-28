@@ -85,8 +85,23 @@
         .shortcut-item:hover { background: var(--surface-color); box-shadow: var(--shadow); transform: translateY(-2px); }
 
         .icon-container { width: 52px; height: 52px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 14px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; overflow: hidden; box-shadow: var(--shadow); }
-        .icon-container img { width: 26px; height: 26px; object-fit: contain; border-radius: 4px; }
-        .icon-fallback { font-size: 16px; font-weight: 600; color: var(--accent-color); background: rgba(0, 113, 227, 0.05); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; text-transform: uppercase; }
+        .icon-container img { 
+    width: 100%;       /* Force image to fill the container width */
+    height: 100%;      /* Force image to fill the container height */
+    object-fit: cover; /* This crops the image to fill the frame perfectly */
+    border-radius: 14px; /* This rounds the corners to match your container */
+    display: block;    /* Removes slight gaps under the image */
+}
+
+        .icon-fallback { 
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    border-radius: 14px; /* Added this to match the cropped images */
+    /* ... keep your other existing styles ... */
+}
         .icon-plus { font-size: 24px; font-weight: 400; color: var(--text-muted); background: var(--border-color); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
         .shortcut-item:hover .icon-plus { background: rgba(0, 113, 227, 0.08); color: var(--accent-color); }
         .shortcut-title { font-size: 11px; font-weight: 500; color: var(--text-main); text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
