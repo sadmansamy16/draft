@@ -1,71 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Gallery</title>
     <style>
-        body { margin: 0; padding: 10px; font-family: sans-serif; }
+        body { margin: 0; padding: 15px; font-family: sans-serif; background: #fff; color: #202124; }
         
-        .app-grid { 
+        .gallery { 
             display: grid; 
-            /* This forces 3 columns with equal width */
             grid-template-columns: repeat(3, 1fr); 
-            /* Reduce gap to make it look like Play Store */
-            gap: 15px 10px; 
-            padding: 5px;
+            gap: 25px 15px; /* Spacing between rows and columns */
+            padding-top: 10px;
         }
-        
+
         .app-item { 
             text-align: center; 
+            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Prevents the item from growing too wide */
-            max-width: 100px; 
-            margin: 0 auto;
         }
-        
+
         .app-item img { 
             width: 100%; 
+            max-width: 110px; /* Big size */
             aspect-ratio: 1 / 1; 
-            border-radius: 20px; 
-            object-fit: cover;
-            /* This shadow makes it look like a physical card */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            object-fit: cover; 
+            border-radius: 24px; /* The perfect Android rounded-square shape */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Adds depth like Play Store */
+            display: block;
         }
         
         .app-title { 
-            font-size: 12px; 
-            margin-top: 6px; 
-            line-height: 1.2;
-            color: #202124;
+            font-size: 13px; 
+            margin-top: 10px; 
+            line-height: 1.3;
+            width: 100%;
             display: -webkit-box; 
-            -webkit-line-clamp: 2; 
+            -webkit-line-clamp: 2; /* Wraps to 2nd line, adds ellipsis */
             -webkit-box-orient: vertical; 
             overflow: hidden; 
             text-overflow: ellipsis; 
-            width: 100%;
+            padding: 0 4px;
         }
     </style>
 </head>
 <body>
 
-<div class="app-grid" id="appContainer"></div>
+    <div class="gallery" id="appGallery"></div>
 
-<script>
-    fetch('app.json?t=' + Date.now())
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('appContainer');
-            data.forEach(app => {
-                const div = document.createElement('div');
-                div.className = 'app-item';
-                div.onclick = () => window.location.href = app.url;
-                div.innerHTML = `
-                    <img src="${app.img}" alt="${app.title}">
-                    <div class="app-title">${app.title}</div>
-                `;
-                container.appendChild(div);
-            });
+    <script>
+        // Data format: Title, Image URL, Destination URL
+        const apps = [
+            { title: "TikTok Lite - Save Data & Fast", img: "https://samy.nav.bd/img/1.png", url: "https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically.go" },
+            { title: "ChatGPT", img: "https://samy.nav.bd/img/2.png", url: "https://play.google.com/store/apps/details?id=com.openai.chatgpt" }
+            // Add your apps here
+        ];
+
+        const gallery = document.getElementById('appGallery');
+
+        apps.forEach(app => {
+            const div = document.createElement('div');
+            div.className = 'app-item';
+            div.onclick = () => window.location.href = app.url;
+            
+            div.innerHTML = `
+                <img src="${app.img}" alt="${app.title}">
+                <div class="app-title">${app.title}</div>
+            `;
+            gallery.appendChild(div);
         });
-</script>
+    </script>
 </body>
 </html>
