@@ -35,8 +35,13 @@
     "img": "https://samy.nav.bd/img/22.png"
   },
   {
-    "name": "Local Weblist",
-    "url": "https://3.s33.pages.dev",
-    "img": "https://samy.nav.bd/img/23.png"
+    "name": "SnapDL",
+    "url": "https://snapdl.pro.bd/",
+    "img": "https://snapdl.pro.bd/fav.jpeg"
+  },
+  {
+    "name": "SyncTube",
+    "url": "https://sync-tube.de/",
+    "img": "https://sync-tube.de/favicon.ico"
   }
 ]
