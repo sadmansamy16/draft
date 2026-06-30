@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Gallery</title>
+    <title>App Store Gallery</title>
     <style>
-        body { margin: 0; padding: 15px; font-family: sans-serif; background: #fff; color: #202124; }
+        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fff; }
         
         .gallery { 
             display: grid; 
+            /* 3 columns to match your screenshot */
             grid-template-columns: repeat(3, 1fr); 
-            gap: 25px 15px; /* Spacing between rows and columns */
-            padding-top: 10px;
+            /* Tight spacing for the store look */
+            gap: 25px 15px; 
         }
-
+        
         .app-item { 
             text-align: center; 
             cursor: pointer;
@@ -22,27 +23,29 @@
             align-items: center;
         }
 
+        /* Large, rounded-square icon styling */
         .app-item img { 
             width: 100%; 
-            max-width: 110px; /* Big size */
+            max-width: 120px; /* Big size */
             aspect-ratio: 1 / 1; 
             object-fit: cover; 
-            border-radius: 24px; /* The perfect Android rounded-square shape */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Adds depth like Play Store */
+            border-radius: 26px; /* Optimized rounded-square */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Depth effect */
             display: block;
         }
         
+        /* Title styling with 2-line auto-wrap */
         .app-title { 
-            font-size: 13px; 
+            font-size: 14px; 
             margin-top: 10px; 
             line-height: 1.3;
-            width: 100%;
+            color: #202124;
             display: -webkit-box; 
-            -webkit-line-clamp: 2; /* Wraps to 2nd line, adds ellipsis */
+            -webkit-line-clamp: 2; /* Forces 2 lines */
             -webkit-box-orient: vertical; 
             overflow: hidden; 
             text-overflow: ellipsis; 
-            padding: 0 4px;
+            width: 100%;
         }
     </style>
 </head>
@@ -51,26 +54,28 @@
     <div class="gallery" id="appGallery"></div>
 
     <script>
-        // Data format: Title, Image URL, Destination URL
-        const apps = [
-            { title: "TikTok Lite - Save Data & Fast", img: "https://samy.nav.bd/img/1.png", url: "https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically.go" },
-            { title: "ChatGPT", img: "https://samy.nav.bd/img/2.png", url: "https://play.google.com/store/apps/details?id=com.openai.chatgpt" }
-            // Add your apps here
-        ];
+        // REPLACE 'app.json' with 'app.jsom' if that is your filename
+        const jsonFileName = 'app.json'; 
 
         const gallery = document.getElementById('appGallery');
 
-        apps.forEach(app => {
-            const div = document.createElement('div');
-            div.className = 'app-item';
-            div.onclick = () => window.location.href = app.url;
-            
-            div.innerHTML = `
-                <img src="${app.img}" alt="${app.title}">
-                <div class="app-title">${app.title}</div>
-            `;
-            gallery.appendChild(div);
-        });
+        fetch(jsonFileName + '?t=' + Date.now())
+            .then(response => response.json())
+            .then(data => {
+                gallery.innerHTML = ""; 
+                data.forEach(app => {
+                    const div = document.createElement('div');
+                    div.className = 'app-item';
+                    div.onclick = () => window.location.href = app.url;
+                    
+                    div.innerHTML = `
+                        <img src="${app.img}" alt="${app.title}">
+                        <div class="app-title">${app.title}</div>
+                    `;
+                    gallery.appendChild(div);
+                });
+            })
+            .catch(err => console.error("Error loading file:", err));
     </script>
 </body>
 </html>
