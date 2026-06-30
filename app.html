@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* This creates the 3-column layout */
+        .app-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); /* Forces 3 columns */
+            gap: 15px; 
+            padding: 15px;
+        }
+        .app-item { 
+            text-align: center; 
+            cursor: pointer; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-item img { 
+            width: 80px; /* Adjust size to fit your needs */
+            height: 80px; 
+            border-radius: 18px; /* Rounded corners like Play Store */
+        }
+        .app-title { 
+            font-size: 13px; 
+            margin-top: 8px; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; /* Ensures 2-line limit */
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-grid" id="appContainer"></div>
+
+<script>
+    // Using ?t= to force refresh
+    fetch('app.json?t=' + Date.now())
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('appContainer');
+            data.forEach(app => {
+                const div = document.createElement('div');
+                div.className = 'app-item';
+                div.onclick = () => window.location.href = app.url;
+                div.innerHTML = `
+                    <img src="${app.img}" alt="${app.title}">
+                    <div class="app-title">${app.title}</div>
+                `;
+                container.appendChild(div);
+            });
+        });
+</script>
+</body>
+</html>
