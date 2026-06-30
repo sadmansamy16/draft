@@ -2,34 +2,37 @@
 <html>
 <head>
     <style>
-        /* This creates the 3-column layout */
         .app-grid { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* Forces 3 columns */
-            gap: 15px; 
-            padding: 15px;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px 10px; /* Vertical and horizontal spacing */
+            padding: 20px;
         }
         .app-item { 
             text-align: center; 
-            cursor: pointer; 
+            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         .app-item img { 
-            width: 80px; /* Adjust size to fit your needs */
-            height: 80px; 
-            border-radius: 18px; /* Rounded corners like Play Store */
+            width: 100px; /* Larger size to match your reference */
+            height: 100px; 
+            border-radius: 22px; /* Smoother rounded-square look */
+            object-fit: cover;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Subtle shadow like Play Store */
         }
         .app-title { 
-            font-size: 13px; 
-            margin-top: 8px; 
+            font-size: 14px; 
+            margin-top: 10px; 
+            line-height: 1.2;
             display: -webkit-box; 
-            -webkit-line-clamp: 2; /* Ensures 2-line limit */
+            -webkit-line-clamp: 2; /* Forces text to wrap to 2 lines */
             -webkit-box-orient: vertical; 
             overflow: hidden; 
             text-overflow: ellipsis; 
             width: 100%;
+            padding: 0 5px;
         }
     </style>
 </head>
@@ -38,7 +41,6 @@
 <div class="app-grid" id="appContainer"></div>
 
 <script>
-    // Using ?t= to force refresh
     fetch('app.json?t=' + Date.now())
         .then(response => response.json())
         .then(data => {
