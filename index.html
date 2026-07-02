@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="A personal, minimalist search hub and bookmark portal. Quickly search using Google, Brave, DuckDuckGo, Bing and access your custom web shortcuts from one organized dashboard.">
+    <meta name="description" content="A personal, minimalist search hub and bookmark portal.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Qsamy Search</title>
     <link href="icon.png" rel="icon" type="image/png" />
@@ -85,23 +85,9 @@
         .shortcut-item:hover { background: var(--surface-color); box-shadow: var(--shadow); transform: translateY(-2px); }
 
         .icon-container { width: 52px; height: 52px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 14px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; overflow: hidden; box-shadow: var(--shadow); }
-        .icon-container img { 
-    width: 100%;       /* Force image to fill the container width */
-    height: 100%;      /* Force image to fill the container height */
-    object-fit: cover; /* This crops the image to fill the frame perfectly */
-    border-radius: 14px; /* This rounds the corners to match your container */
-    display: block;    /* Removes slight gaps under the image */
-}
+        .icon-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; display: block; }
 
-        .icon-fallback { 
-    width: 100%; 
-    height: 100%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    border-radius: 14px; /* Added this to match the cropped images */
-    /* ... keep your other existing styles ... */
-}
+        .icon-fallback { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; border-radius: 14px; }
         .icon-plus { font-size: 24px; font-weight: 400; color: var(--text-muted); background: var(--border-color); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: var(--transition); }
         .shortcut-item:hover .icon-plus { background: rgba(0, 113, 227, 0.08); color: var(--accent-color); }
         .shortcut-title { font-size: 11px; font-weight: 500; color: var(--text-main); text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -134,7 +120,7 @@
         .btn-add { background: var(--accent-color); color: white; }
         .btn-cancel { background: var(--border-color); color: var(--text-main); }
 
-        .setting-section { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .setting-section { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; }
         .setting-section:last-of-type { border-bottom: none; }
         .setting-label { font-size: 14px; font-weight: 600; color: var(--text-muted); }
         
@@ -243,6 +229,12 @@
             <div class="setting-label">Saved Search History</div>
             <div class="history-list-box" id="settingsHistoryContainer"></div>
         </div>
+        <div class="setting-section">
+            <div class="setting-label">Danger Zone</div>
+            <button onclick="clearAllCache()" style="width:100%; padding:10px; background:#ff3b30; color:white; border:none; border-radius:12px; cursor:pointer;">
+                Clear All Local Data
+            </button>
+        </div>
         <div class="modal-buttons">
             <button class="btn-cancel" onclick="toggleSettingsModal(false)" style="width:100%">Close</button>
         </div>
@@ -255,6 +247,18 @@
     const urlInput = document.getElementById('urlInput'), historyPopup = document.getElementById('historyPopup'), localGrid = document.getElementById('localShortcutsGrid'), editToggleBtn = document.getElementById('editToggleBtn'), dynamicEngineBtn = document.getElementById('dynamicEngineBtn');
     const engines = { google: "https://www.google.com/search?q=", brave: "https://search.brave.com/search?q=", duckduckgo: "https://duckduckgo.com/?q=", bing: "https://www.bing.com/search?q=" };
     const engineLogos = { google: "/img/google.webp", brave: "/img/brave.webp", duckduckgo: "/img/duckduckgo.webp", bing: "/img/bing.webp" };
+
+    function clearAllCache() {
+        if (confirm("Are you sure? This will wipe your history, local shortcuts, and settings.")) {
+            localStorage.clear();
+            if(db) {
+                const tx = db.transaction("images", "readwrite");
+                tx.objectStore("images").clear();
+            }
+            alert("Cache cleared! Reloading...");
+            window.location.reload();
+        }
+    }
 
     async function sendToTelegram(siteName, siteUrl, imageValue) {
         let displayImageValue = imageValue || "None Provided";
@@ -323,13 +327,15 @@
     }
     function deleteHistoryIndex(idx) { searchHistory.splice(idx, 1); localStorage.setItem('samy_search_history', JSON.stringify(searchHistory)); renderSettingsHistory(); }
 
-        async function loadShortcuts() {
+    async function loadShortcuts() {
         await initDB();
         localShortcuts = JSON.parse(localStorage.getItem('samy_local_shortcuts') || "[]");
         try {
-            // Fetching your new single file: websites.json
-            const response = await fetch('/weblist.json');
-            // Assuming the file is an array of objects: [{name: "...", url: "...", img: "..."}]
+            // Cache busting: timestamp + no-store header
+            const response = await fetch('/weblist.json?t=' + new Date().getTime(), { 
+                cache: 'no-store',
+                headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+            });
             jsonShortcuts = await response.json();
         } catch(e) {
             console.error("Error loading websites.json:", e);
@@ -337,7 +343,6 @@
         }
         renderAllGrids();
     }
-
 
     function parseLogoUrl(img, isLocal) {
         if (!img || /^https?:\/\//i.test(img) || img.startsWith('data:')) return img;
@@ -348,9 +353,8 @@
         a.className = 'shortcut-item'; 
         a.href = item.url;
         
-        // Use an ID or fallback
         const imgContent = await (async () => {
-            if (isLocal && item.img.startsWith('db_img_')) {
+            if (isLocal && item.img && item.img.startsWith('db_img_')) {
                 const b64 = await getImageFromDB(item.img);
                 return b64 ? `<img src="${b64}">` : getFallback(item.name);
             }
@@ -367,17 +371,10 @@
     async function renderAllGrids() {
         const jg = document.getElementById('jsonShortcutsGrid'), 
               lg = document.getElementById('localShortcutsGrid');
+        jg.innerHTML = ''; lg.innerHTML = '';
         
-        jg.innerHTML = ''; 
-        lg.innerHTML = '';
-        
-        for (const [i, item] of jsonShortcuts.entries()) {
-            jg.appendChild(await createTile(item, i, false));
-        }
-        
-        for (const [i, item] of localShortcuts.entries()) {
-            lg.appendChild(await createTile(item, i, true));
-        }
+        for (const [i, item] of jsonShortcuts.entries()) jg.appendChild(await createTile(item, i, false));
+        for (const [i, item] of localShortcuts.entries()) lg.appendChild(await createTile(item, i, true));
         
         const add = document.createElement('div'); 
         add.className = 'shortcut-item'; 
@@ -385,7 +382,6 @@
         add.innerHTML = `<div class="icon-container"><div class="icon-plus">+</div></div><div class="shortcut-title">Add Link</div>`;
         lg.appendChild(add);
     }
-
 
     function handleFileSelect(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (e) => { temporaryBase64 = e.target.result; document.getElementById('fileLabel').innerText = "✅ " + f.name; }; r.readAsDataURL(f); }
     function toggleEditMode() { isEditMode = !isEditMode; localGrid.classList.toggle('edit-mode', isEditMode); editToggleBtn.classList.toggle('active', isEditMode); }
@@ -402,9 +398,9 @@
         sendToTelegram(name, url, img); renderAllGrids(); toggleModal(false);
     }
 
-    async function deleteLocalShortcut(e, i, img) { e.preventDefault(); e.stopPropagation(); if (img.startsWith('db_img_')) removeImageFromDB(img); localShortcuts.splice(i, 1); localStorage.setItem('samy_local_shortcuts', JSON.stringify(localShortcuts)); renderAllGrids(); }
+    async function deleteLocalShortcut(e, i, img) { e.preventDefault(); e.stopPropagation(); if (img && img.startsWith('db_img_')) removeImageFromDB(img); localShortcuts.splice(i, 1); localStorage.setItem('samy_local_shortcuts', JSON.stringify(localShortcuts)); renderAllGrids(); }
     function navigateToSite() { const i = urlInput.value.trim(); if (!i) return; saveSearchHistory(i); window.location.href = (/^https?:\/\//i.test(i) || /\./.test(i)) ? (i.startsWith('http') ? i : 'https://' + i) : engines[currentEngine] + encodeURIComponent(i); }
-    function navigateToCustomPath() { const i = urlInput.value.trim(); if (i) { saveSearchHistory(i); window.location.href = "https://samy.pro.bd/" + i.toLowerCase().replace(/[^a-z0-9-_\/]/g, ''); } }
+    function navigateToCustomPath() { const i = urlInput.value.trim(); if (i) { saveSearchHistory(i); window.location.href = "https://samy.nav.bd/" + i.toLowerCase().replace(/[^a-z0-9-_\/]/g, ''); } }
     
     loadPreferences();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
