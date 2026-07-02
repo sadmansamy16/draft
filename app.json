@@ -3,25 +3,25 @@
   {
     "name": "Google's Find Hub",
     "dis": "Locate and secure your lost Android devices.",
-    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvhJJiqg-wO0EwY4HmTZjEua130L6eGN-nHHCG2NDrpg&s",
+    "img": "https://samy.nav.bd/img/35.png",
     "urls": ["https://play.google.com/store/apps/details?id=com.google.android.apps.adm"]
   },
 {
     "name": "ONCALL | SIP",
     "dis": "Professional SIP softphone for VoIP calling.",
-    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX4wFVYro9SrEykH1Ri_4NqERu3qPwRCQPlzC7ABUgoA&s=10",
+    "img": "https://samy.nav.bd/img/34.png",
     "urls": ["https://play.google.com/store/apps/details?id=com.portsip.oncall"]
   },
 {
     "name": "Tile Shortcuts",
     "dis": "Create custom quick settings tiles for your favorite apps.",
-    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbrpFsmsWVIQiSYdSuQ_3Kkhr4xWOnrc-heZBF7ADBxg&s=10",
+    "img": "https://samy.nav.bd/img/33.png",
     "urls": ["https://play.google.com/store/apps/details?id=com.tombayley.tileshortcuts"]
   },
   {
     "name": "IMEI Buddy",
     "dis": "Check IMEI information and network status easily.",
-    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-38lXJcehCvn177kCuz0INfEdwLc0k3_bgpcaDA7xtg&s",
+    "img": "https://samy.nav.bd/img/32.png",
     "urls": ["https://play.google.com/store/apps/details?id=io.github.chayanforyou.neir"]
   },
 {
@@ -45,7 +45,7 @@
   {
     "name": "OuterTune",
     "dis": "A Material Design YouTube Music client for Android.",
-    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgXvSrfpf9lkI2oFta4Z4JHfmNsdQdB6aRzfdZgntftw&s=10",
+    "img": "https://samy.nav.bd/img/19.png",
     "urls": [
       "https://f-droid.org/packages/com.dd3boh.outertune",
       "https://outertune.github.io/",
